@@ -1,0 +1,5 @@
+# Temporary files created by OSX
+*.DS_Store
+
+# Files related to development
+node_modules

@@ -1,0 +1,34 @@
+{
+  "name": "vanilla-js-starter-pack",
+  "version": "1.0.0",
+  "description": "This is a starter pack for building Vanilla JS apps. It has configurations set up for Webpack and includes linter files for linting.",
+  "main": "index.js",
+  "scripts": {
+    "lint": "npx eslint . && npx stylelint '**/*.{css,scss}'",
+    "start": "webpack-dev-server --mode=development --open",
+    "production": "webpack --mode=production"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krys2fa/vanilla-js-starter-pack.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/krys2fa/vanilla-js-starter-pack/issues"
+  },
+  "homepage": "https://github.com/krys2fa/vanilla-js-starter-pack#readme",
+  "devDependencies": {
+    "eslint": "6.8.0",
+    "eslint-config-airbnb-base": "14.1.0",
+    "eslint-plugin-import": "2.20.2",
+    "html-webpack-plugin": "4.4.1",
+    "stylelint": "13.3.3",
+    "stylelint-config-standard": "20.0.0",
+    "stylelint-csstree-validator": "1.8.0",
+    "stylelint-scss": "3.17.2",
+    "webpack": "4.44.1",
+    "webpack-cli": "3.3.12",
+    "webpack-dev-server": "3.11.0"
+  }
+}
