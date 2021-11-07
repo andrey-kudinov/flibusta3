@@ -9,4 +9,10 @@ module.exports = {
     filename: 'output.bundle.js',
   },
   plugins: [new HtmlWebPackPlugin()],
+  node: {
+    child_process: 'empty',
+    fs: 'empty',
+    net: 'empty',
+    tls: 'empty',
+  },
 };
