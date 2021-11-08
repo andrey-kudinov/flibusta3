@@ -1,20 +1,55 @@
 const jsdom = require('jsdom');
 
-const urlFlibusta = 'http://flibusta.is/booksearch';
+const urlFlibusta = 'http://flibusta.is';
+const search = '/booksearch';
 const proxy = 'https://cors-anywhere.herokuapp.com/';
 
-const fetchFlibusta = async (name) => {
-  const url = new URL(urlFlibusta);
+const fetchFlibusta = async (name, isDetailedBook = false) => {
+  let url = new URL(urlFlibusta + search);
+
   url.searchParams.set('ask', name);
   url.searchParams.set('chb', 'on');
 
+  if (isDetailedBook) {
+    url = `${urlFlibusta}${name}`;
+  }
+
   const response = await fetch(proxy + url);
   const fetchData = await response.text();
+  return fetchData;
+};
 
-  const { JSDOM } = jsdom;
-  const dom = new JSDOM(fetchData);
+const { JSDOM } = jsdom;
 
-  let arr = [];
+const createDetailBook = async (name) => {
+  const dom = new JSDOM(await fetchFlibusta(name, true));
+
+  const arr = [];
+
+  const nodeList = dom.window.document.querySelectorAll('a');
+
+  nodeList.forEach(node => {
+    const obj = {};
+    obj.link = node.href;
+    arr.push(obj);
+  });
+
+  const book = arr.find(book => book.name.includes('epub'));
+
+  if (document.querySelector('ul')) {
+    document.querySelector('ul').remove();
+  }
+
+  const link = document.createElement('a');
+  link.textContent = 'Download Epub';
+  link.href = `http://flibusta.is${book.link}`;
+  document.body.appendChild(link);
+};
+
+const createList = async (name) => {
+  const dom = new JSDOM(await fetchFlibusta(name));
+
+  const arr = [];
 
   const nodeList = dom.window.document.querySelectorAll('a');
 
@@ -25,7 +60,8 @@ const fetchFlibusta = async (name) => {
     arr.push(obj);
   });
 
-  arr = arr.filter(book => book.link.includes('/b/'));
+  const books = arr.filter(book => book.link.includes('/b/'));
+  const authors = arr.filter(book => book.link.includes('/a/'));
 
   if (document.querySelector('ul')) {
     document.querySelector('ul').remove();
@@ -33,17 +69,22 @@ const fetchFlibusta = async (name) => {
 
   const ul = document.createElement('ul');
 
-  arr.forEach(book => {
-    const link = document.createElement('a');
+  books.forEach((book, index) => {
+    const button = document.createElement('button');
     const li = document.createElement('li');
-    link.textContent = book.name;
-    link.href = `http://flibusta.is${book.link}`;
-    li.appendChild(link);
+    button.textContent = `${book.name} - ${authors[index + 1].name}`;
+    button.dataset.link = `http://flibusta.is${book.link}`;
+    li.appendChild(button);
     ul.appendChild(li);
+
+    button.onclick = () => {
+      createDetailBook(book.link);
+    };
   });
 
   document.body.appendChild(ul);
 };
+
 
 const createPageLayout = () => {
   const title = document.createElement('h1');
@@ -63,7 +104,7 @@ const createPageLayout = () => {
   document.querySelector('button').onclick = () => {
     const name = document.querySelector('input').value;
     document.querySelector('input').value = '';
-    fetchFlibusta(name);
+    createList(name);
   };
 };
 
