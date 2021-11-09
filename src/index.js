@@ -2,7 +2,12 @@ const jsdom = require('jsdom');
 
 const urlFlibusta = 'http://flibusta.is';
 const search = '/booksearch';
-const proxy = 'https://cors-anywhere.herokuapp.com/';
+// const proxy = 'https://cors-anywhere.herokuapp.com/';
+// const proxy2 = 'https://crossorigin.me/';
+// const proxy3 = 'http://cors-proxy.htmldriven.com/?url=';
+const proxy4 = 'http://www.whateverorigin.org/get?url=';
+
+const cleanUpString = (string) => string.replaceAll('"', '').replaceAll('\\', '');
 
 const fetchFlibusta = async (name, isDetailedBook = false) => {
   let url = new URL(urlFlibusta + search);
@@ -11,10 +16,11 @@ const fetchFlibusta = async (name, isDetailedBook = false) => {
   url.searchParams.set('chb', 'on');
 
   if (isDetailedBook) {
-    url = `${urlFlibusta}${name}`;
+    url = urlFlibusta + name;
+    url = cleanUpString(url);
   }
 
-  const response = await fetch(proxy + url);
+  const response = await fetch(proxy4 + url);
   const fetchData = await response.text();
   return fetchData;
 };
@@ -30,14 +36,18 @@ const createDetailBook = async (name) => {
 
   nodeList.forEach(node => {
     const obj = {};
-    obj.link = node.href;
+    obj.link = cleanUpString(node.href);
     arr.push(obj);
   });
 
-  const book = arr.find(book => book.name.includes('epub'));
+  const book = arr.find(book => book.link.includes('epub'));
 
   if (document.querySelector('ul')) {
     document.querySelector('ul').remove();
+  }
+
+  if (document.querySelector('a')) {
+    document.querySelector('a').remove();
   }
 
   const link = document.createElement('a');
@@ -56,7 +66,7 @@ const createList = async (name) => {
   nodeList.forEach(node => {
     const obj = {};
     obj.name = node.textContent;
-    obj.link = node.href;
+    obj.link = cleanUpString(node.href);
     arr.push(obj);
   });
 
@@ -72,7 +82,7 @@ const createList = async (name) => {
   books.forEach((book, index) => {
     const button = document.createElement('button');
     const li = document.createElement('li');
-    button.textContent = `${book.name} - ${authors[index + 1].name}`;
+    button.textContent = `${book.name} - ${authors[index + 2].name} - ${book.link}}`;
     button.dataset.link = `http://flibusta.is${book.link}`;
     li.appendChild(button);
     ul.appendChild(li);
@@ -84,7 +94,6 @@ const createList = async (name) => {
 
   document.body.appendChild(ul);
 };
-
 
 const createPageLayout = () => {
   const title = document.createElement('h1');
