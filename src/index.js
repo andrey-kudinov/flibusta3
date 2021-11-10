@@ -52,6 +52,7 @@ const createDetailBook = async (name) => {
 
   const link = document.createElement('a');
   link.textContent = 'Download Epub';
+  link.target = '_blank';
   link.href = `http://flibusta.is${book.link}`;
   document.body.appendChild(link);
 };
@@ -60,6 +61,11 @@ const createList = async (name) => {
   const dom = new JSDOM(await fetchFlibusta(name));
 
   const arr = [];
+
+  const ulList = dom.window.document.querySelectorAll('ul');
+  const ulLast = ulList[ulList.length - 1];
+  const liList = ulLast.childNodes;
+  console.log(liList);
 
   const nodeList = dom.window.document.querySelectorAll('a');
 
@@ -82,7 +88,7 @@ const createList = async (name) => {
   books.forEach((book, index) => {
     const button = document.createElement('button');
     const li = document.createElement('li');
-    button.textContent = `${book.name} - ${authors[index + 2].name} - ${book.link}}`;
+    button.textContent = `${book.name} - ${authors[index].name} - ${book.link}}`;
     button.dataset.link = `http://flibusta.is${book.link}`;
     li.appendChild(button);
     ul.appendChild(li);
